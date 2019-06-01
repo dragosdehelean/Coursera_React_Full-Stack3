@@ -5,7 +5,7 @@ import { DISHES } from "../shared/dishes";
 import { COMMENTS } from "../shared/comments";
 
 function RenderDish(props) {
-   const dish = props.dish;
+  const dish = props.dish;
   if (dish != null) {
     return (
       <Card
