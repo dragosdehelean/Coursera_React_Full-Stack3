@@ -14,7 +14,7 @@
  * 
  * Comanda care a functionat a fost: json-server --watch db.json --host 0.0.0.0 -p 3001 -d 2000
  *  
- * Json server spunea ca serveste la 0.0... 
+ * JSON server spunea ca serveste la 0.0... 
  * insa cand am incercat de pe mobil sa accesez din nou vechiul url- http://192.168.0.101:3001/... a functionat!
  * 
  * Sursa: https://www.coursera.org/learn/react-native/discussions/weeks/2/threads/P5TeirHDEein_Aq6CDcoyg

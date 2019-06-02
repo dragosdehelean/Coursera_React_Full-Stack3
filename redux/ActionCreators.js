@@ -51,7 +51,6 @@ export const fetchDishes = () => dispatch => {
   return fetch(baseUrl + "dishes")
     .then(
       response => {
-        console.log('m-am conectat!')
         if (response.ok) {
           return response;
         } else {
