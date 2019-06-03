@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Text, View, ScrollView, FlatList } from "react-native";
+import { Text, View, ScrollView, FlatList, Modal } from "react-native";
 import { Card, Icon } from "react-native-elements";
 import { connect } from "react-redux";
 import { baseUrl } from "../shared/baseUrl";
@@ -19,6 +19,7 @@ const mapDispatchToProps = dispatch => ({
 
 function RenderDish(props) {
   const dish = props.dish;
+
   if (dish != null) {
     return (
       <Card featuredTitle={dish.name} image={{ uri: baseUrl + dish.image }}>
@@ -32,6 +33,14 @@ function RenderDish(props) {
           onPress={() =>
             props.favorite ? console.log("Already favorite") : props.onPress()
           }
+        />
+        <Icon
+          raised
+          reverse
+          name="pencil"
+          type="font-awesome"
+          color="#512DA8"
+          onPress={props.handleCommentButton}
         />
       </Card>
     );
@@ -64,7 +73,13 @@ function RenderComments({ comments }) {
   );
 }
 
+/**
+ * Main Component
+ */
 class Dishdetail extends Component {
+  state = {
+    showModal: false
+  };
   static navigationOptions = {
     title: "Dish Details"
   };
@@ -72,6 +87,11 @@ class Dishdetail extends Component {
   markFavorite(dishId) {
     this.props.postFavorite(dishId);
   }
+
+  // Method used to toggle the comment modal
+  toggleModal = () => {
+    this.setState(prevState => ({ showModal: !prevState.showModal }));
+  };
 
   render() {
     const dishId = this.props.navigation.getParam("dishId", "");
@@ -81,15 +101,52 @@ class Dishdetail extends Component {
           dish={this.props.dishes.dishes[+dishId]}
           favorite={this.props.favorites.some(el => el === dishId)}
           onPress={() => this.markFavorite(dishId)}
+          handleCommentButton={this.toggleModal}
         />
         <RenderComments
           comments={this.props.comments.comments.filter(
             comment => comment.dishId === dishId
           )}
         />
+
+        <Modal
+          animationType={"slide"}
+          transparent={false}
+          visible={this.state.showModal}
+          onDismiss={this.toggleModal}
+          onRequestClose={this.toggleModal}          
+        >
+          <Text> Test</Text>
+
+        
+          {/* <View style={styles.modal}>
+            <Text style={styles.modalTitle}>Your Reservation</Text>
+            <Text style={styles.modalText}>
+              Number of Guests: {this.state.guests}
+            </Text>
+            <Text style={styles.modalText}>
+              Smoking?: {this.state.smoking ? "Yes" : "No"}
+            </Text>
+            <Text style={styles.modalText}>
+              Date and Time: {this.state.date}
+            </Text>
+
+            <Button
+              onPress={() => {
+                this.toggleModal();
+                this.resetForm();
+              }}
+              color="#512DA8"
+              title="Close"
+            />
+          </View> */}
+        </Modal>
       </ScrollView>
     );
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Dishdetail);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Dishdetail);
