@@ -1,11 +1,11 @@
 import React, { Component } from "react";
-import { FlatList, View, Text } from "react-native";
 import { ListItem } from "react-native-elements";
 import { connect } from "react-redux";
 import { Loading } from "./LoadingComponent";
 import { baseUrl } from "../shared/baseUrl";
 import Swipeout from "react-native-swipeout";
 import { deleteFavorite } from "../redux/ActionCreators";
+import { FlatList, View, Text, Alert } from "react-native";
 
 const mapStateToProps = state => {
   return {
@@ -27,14 +27,32 @@ class Favorites extends Component {
     const { navigate } = this.props.navigation;
 
     const renderMenuItem = ({ item, index }) => {
-
-        const rightButton = [
-            {
-              text: "Delete",
-              type: "delete",
-              onPress: () => this.props.deleteFavorite(item.id)
-            }
-          ];
+      const rightButton = [
+        {
+          text: "Delete",
+          type: "delete",
+          onPress: () => {
+            Alert.alert(
+              "Delete Favorite?",
+              "Are you sure you wish to delete the favorite dish " +
+                item.name +
+                "?",
+              [
+                {
+                  text: "Cancel",
+                  onPress: () => console.log(item.name + "Not Deleted"),
+                  style: " cancel"
+                },
+                {
+                  text: "OK",
+                  onPress: () => this.props.deleteFavorite(item.id)
+                }
+              ],
+              { cancelable: false }
+            );
+          }
+        }
+      ];
       return (
         <Swipeout right={rightButton} autoClose={true}>
           <ListItem
@@ -71,4 +89,7 @@ class Favorites extends Component {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Favorites);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Favorites);
