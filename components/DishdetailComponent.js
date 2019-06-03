@@ -11,7 +11,7 @@ import {
 import { Card, Icon, Rating, Input } from "react-native-elements";
 import { connect } from "react-redux";
 import { baseUrl } from "../shared/baseUrl";
-import { postFavorite } from "../redux/ActionCreators";
+import { postFavorite, postComment } from "../redux/ActionCreators";
 
 const mapStateToProps = state => {
   return {
@@ -22,7 +22,9 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = dispatch => ({
-  postFavorite: dishId => dispatch(postFavorite(dishId))
+  postFavorite: dishId => dispatch(postFavorite(dishId)),
+  postComment: (dishId, rating, author, comment) =>
+    dispatch(postComment(dishId, rating, author, comment))
 });
 
 function RenderDish(props) {
@@ -110,6 +112,15 @@ class Dishdetail extends Component {
     this.setState({ rating: newRating });
   };
 
+  handleComment = (dishId) =>{
+    this.props.postComment(
+      dishId,
+      this.state.rating,
+      this.state.author,
+      this.state.comment
+    );
+  }
+
   render() {
     const dishId = this.props.navigation.getParam("dishId", "");
     return (
@@ -125,6 +136,8 @@ class Dishdetail extends Component {
             comment => comment.dishId === dishId
           )}
         />
+
+        {/* Look here for the second assignment! */}
 
         <Modal
           animationType={"slide"}
@@ -145,7 +158,9 @@ class Dishdetail extends Component {
             <Input
               placeholder="Author"
               leftIcon={{ type: "font-awesome", name: "user" }}
-              leftIconContainerStyle={{marginRight: 10}}
+              leftIconContainerStyle={{ marginRight: 10 }}
+              onChangeText={author => this.setState({ author })}
+              value={this.state.author}
             />
           </View>
           <View style={styles.commentRow}>
@@ -153,17 +168,27 @@ class Dishdetail extends Component {
               placeholder="Comment"
               leftIcon={{
                 type: "font-awesome",
-                name: "comment"               
+                name: "comment"
               }}
-              leftIconContainerStyle={{marginRight: 10}}
+              leftIconContainerStyle={{ marginRight: 10 }}
+              onChangeText={comment => this.setState({ comment })}
+              value={this.state.comment}
             />
           </View>
           <View style={styles.commentRow}>
-            <Button color="#512DA7" title="Submit" onPress={this.toggleModal}  />
+            <Button
+              color="#512DA7"
+              title="Submit"
+              onPress={() => {
+                this.handleComment(dishId);
+                this.toggleModal();
+              }}
+              style={styles.commentRow}
+            />
           </View>
           <View style={styles.commentRow}>
-            <Button onPress={this.toggleModal} color="#808080" title="Cancel"/>
-          </View>        
+            <Button onPress={this.toggleModal} color="#808080" title="Cancel" />
+          </View>
         </Modal>
       </ScrollView>
     );
