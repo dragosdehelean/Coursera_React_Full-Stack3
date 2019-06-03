@@ -1,6 +1,14 @@
 import React, { Component } from "react";
-import { Text, View, ScrollView, FlatList, Modal } from "react-native";
-import { Card, Icon } from "react-native-elements";
+import {
+  Text,
+  View,
+  ScrollView,
+  FlatList,
+  Button,
+  Modal,
+  StyleSheet
+} from "react-native";
+import { Card, Icon, Rating, Input } from "react-native-elements";
 import { connect } from "react-redux";
 import { baseUrl } from "../shared/baseUrl";
 import { postFavorite } from "../redux/ActionCreators";
@@ -24,24 +32,26 @@ function RenderDish(props) {
     return (
       <Card featuredTitle={dish.name} image={{ uri: baseUrl + dish.image }}>
         <Text style={{ margin: 10 }}>{dish.description}</Text>
-        <Icon
-          raised
-          reverse
-          name={props.favorite ? "heart" : "heart-o"}
-          type="font-awesome"
-          color="#f50"
-          onPress={() =>
-            props.favorite ? console.log("Already favorite") : props.onPress()
-          }
-        />
-        <Icon
-          raised
-          reverse
-          name="pencil"
-          type="font-awesome"
-          color="#512DA8"
-          onPress={props.handleCommentButton}
-        />
+        <View style={styles.buttonsRow}>
+          <Icon
+            raised
+            reverse
+            name={props.favorite ? "heart" : "heart-o"}
+            type="font-awesome"
+            color="#f50"
+            onPress={() =>
+              props.favorite ? console.log("Already favorite") : props.onPress()
+            }
+          />
+          <Icon
+            raised
+            reverse
+            name="pencil"
+            type="font-awesome"
+            color="#512DA8"
+            onPress={props.handleCommentButton}
+          />
+        </View>
       </Card>
     );
   } else {
@@ -78,7 +88,10 @@ function RenderComments({ comments }) {
  */
 class Dishdetail extends Component {
   state = {
-    showModal: false
+    showModal: false,
+    rating: 1,
+    author: "",
+    comment: ""
   };
   static navigationOptions = {
     title: "Dish Details"
@@ -91,6 +104,10 @@ class Dishdetail extends Component {
   // Method used to toggle the comment modal
   toggleModal = () => {
     this.setState(prevState => ({ showModal: !prevState.showModal }));
+  };
+
+  handleRating = newRating => {
+    this.setState({ rating: newRating });
   };
 
   render() {
@@ -114,37 +131,60 @@ class Dishdetail extends Component {
           transparent={false}
           visible={this.state.showModal}
           onDismiss={this.toggleModal}
-          onRequestClose={this.toggleModal}          
+          onRequestClose={this.toggleModal}
         >
-          <Text> Test</Text>
-
-        
-          {/* <View style={styles.modal}>
-            <Text style={styles.modalTitle}>Your Reservation</Text>
-            <Text style={styles.modalText}>
-              Number of Guests: {this.state.guests}
-            </Text>
-            <Text style={styles.modalText}>
-              Smoking?: {this.state.smoking ? "Yes" : "No"}
-            </Text>
-            <Text style={styles.modalText}>
-              Date and Time: {this.state.date}
-            </Text>
-
-            <Button
-              onPress={() => {
-                this.toggleModal();
-                this.resetForm();
-              }}
-              color="#512DA8"
-              title="Close"
+          <View style={styles.commentRow}>
+            <Rating
+              showRating
+              ratingCount={5}
+              startingValue={this.state.rating}
+              onFinishRating={this.handleRating}
             />
-          </View> */}
+          </View>
+          <View style={styles.commentRow}>
+            <Input
+              placeholder="Author"
+              leftIcon={{ type: "font-awesome", name: "user" }}
+              leftIconContainerStyle={{marginRight: 10}}
+            />
+          </View>
+          <View style={styles.commentRow}>
+            <Input
+              placeholder="Comment"
+              leftIcon={{
+                type: "font-awesome",
+                name: "comment"               
+              }}
+              leftIconContainerStyle={{marginRight: 10}}
+            />
+          </View>
+          <View style={styles.commentRow}>
+            <Button color="#512DA7" title="Submit" onPress={this.toggleModal}  />
+          </View>
+          <View style={styles.commentRow}>
+            <Button onPress={this.toggleModal} color="#808080" title="Cancel"/>
+          </View>        
         </Modal>
       </ScrollView>
     );
   }
 }
+
+const styles = StyleSheet.create({
+  buttonsRow: {
+    alignItems: "center",
+    justifyContent: "center",
+    flex: 1,
+    flexDirection: "row"
+  },
+  commentRow: {
+    justifyContent: "center",
+    alignItems: "center",
+    flex: 1,
+    flexDirection: "row",
+    margin: 10
+  }
+});
 
 export default connect(
   mapStateToProps,

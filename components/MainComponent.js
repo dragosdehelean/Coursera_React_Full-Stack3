@@ -14,6 +14,7 @@ import {
   Image,
   StyleSheet
 } from "react-native";
+
 import {
   createStackNavigator,
   createDrawerNavigator,
@@ -169,7 +170,7 @@ const ReservationNavigator = createStackNavigator(
           name="menu"
           size={24}
           iconStyle={{ color: "white" }}
-          onPress={() => navigation.navigate("DrawerToggle")}
+          onPress={() => navigation.toggleDrawer()}
         />
       )
     })

@@ -129,7 +129,6 @@ class Reservation extends Component {
             <Text style={styles.modalText}>
               Date and Time: {this.state.date}
             </Text>
-
             <Button
               onPress={() => {
                 this.toggleModal();
@@ -137,6 +136,7 @@ class Reservation extends Component {
               }}
               color="#512DA8"
               title="Close"
+              
             />
           </View>
         </Modal>
