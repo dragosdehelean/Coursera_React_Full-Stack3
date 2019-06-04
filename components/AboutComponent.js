@@ -32,7 +32,7 @@ const History = props => {
   );
 };
 
-class About extends Component {
+class About extends Component { 
   static navigationOptions = {
     title: "About Us"
   };
