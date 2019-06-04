@@ -249,7 +249,7 @@ class Dishdetail extends Component {
                      value={this.state.comment}
                   />
                </View>
-               <View style={styles.commentRow}>
+               <View style={styles.commentButton}>
                   <Button
                      color="#512DA7"
                      title="Submit"
@@ -257,10 +257,9 @@ class Dishdetail extends Component {
                         this.handleComment(dishId);
                         this.toggleModal();
                      }}
-                     style={styles.commentRow}
                   />
                </View>
-               <View style={styles.commentRow}>
+               <View style={styles.commentButton}>
                   <Button
                      onPress={this.toggleModal}
                      color="#808080"
@@ -286,6 +285,9 @@ const styles = StyleSheet.create({
       flex: 1,
       flexDirection: "row",
       margin: 10
+   },
+   commentButton: {
+      margin: 60
    }
 });
 
