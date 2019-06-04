@@ -20,4 +20,6 @@
  * Sursa: https://www.coursera.org/learn/react-native/discussions/weeks/2/threads/P5TeirHDEein_Aq6CDcoyg
  * 
  */
-export const baseUrl = 'http://192.168.0.101:3001/'
+// export const baseUrl = 'http://192.168.0.101:3001/' // acasa
+
+export const baseUrl = 'http://10.233.113.49:3001/'; // sediu Vodafone

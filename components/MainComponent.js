@@ -97,7 +97,7 @@ const MenuNavigator = createStackNavigator(
       },
       headerTintColor: "#fff",
       headerTitleStyle: {
-        color: "#fff"
+        color: "#fff",
       }
     }
   }
