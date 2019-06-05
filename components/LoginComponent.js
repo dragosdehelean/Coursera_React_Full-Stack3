@@ -157,6 +157,7 @@ class RegisterTab extends Component {
          if (!capturedImage.cancelled) {
             console.log(capturedImage);
             this.processImage(capturedImage.uri);
+            // this.setState({ imageUrl: capturedImage.uri });
          }
       }
    };
@@ -164,7 +165,7 @@ class RegisterTab extends Component {
    processImage = async imageUri => {
       let processedImage = await ImageManipulator.manipulate(
          imageUri,
-         [{ resize: { width: 400 } }],
+         [{ resize: { width: 200 } }],
          { format: "png" }
       );
       console.log(processedImage);
