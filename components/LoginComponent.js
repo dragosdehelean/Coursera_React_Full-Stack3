@@ -1,16 +1,16 @@
 import React, { Component } from "react";
-import { View, StyleSheet, Text, ScrollView, Image } from "react-native";
+import {
+   View,
+   StyleSheet,
+   Text,
+   ScrollView,
+   Image,
+   ToastAndroid
+} from "react-native";
 import { Input, CheckBox, Button, Icon } from "react-native-elements";
 import { createBottomTabNavigator } from "react-navigation";
 import { baseUrl } from "../shared/baseUrl";
-import {
-   SecureStore,
-   Camera,
-   Permissions,
-   ImagePicker,
-   Asset,
-   ImageManipulator
-} from "expo";
+import { SecureStore, Permissions, ImagePicker, ImageManipulator } from "expo";
 
 class LoginTab extends Component {
    constructor(props) {
@@ -62,6 +62,82 @@ class LoginTab extends Component {
          );
    }
 
+   handleRealLogin = () => {
+      // Headers
+      let headers = new Headers();
+      headers.append("Content-Type", "application/x-www-form-urlencoded");
+      //   headers.append(
+      //      "Authorization",
+      //      "Basic " + base64.encode(CLIENT_ID + ":" + CLIENT_SECRET)
+      //   ); // Basic Access Header
+
+      // Body
+      const details = {
+         username: this.state.username, // "user_test",
+         password: this.state.password, // "devspring",
+         grant_type: "password",
+         client_id: "kiosk-app",
+         client_secret: "09d25c31-978c-4284-9fed-e81e484109f5"
+      };
+
+      const formBody = Object.keys(details)
+         .map(
+            key =>
+               encodeURIComponent(key) + "=" + encodeURIComponent(details[key])
+         )
+         .join("&");
+
+      // Request config
+      const requestConfig = {
+         method: "POST",
+         headers: headers,
+         body: formBody
+      };
+
+      const path =
+         "http://etl-integration-dev.connex.ro:9999/auth/realms/kiosk-bff/protocol/openid-connect/token";
+
+      console.log(requestConfig);
+
+      // Sends request and returns the response resolution/failure after chcking for errors
+      //   fetch(path, requestConfig)
+      fetch(path, requestConfig)
+         .then(
+            response => {
+            
+               if (response.ok) {
+                  return response;
+               } else {
+                  var error = new Error(
+                     "Error " +
+                        response.status +
+                        ": " +
+                        response.statusText
+                  );
+                  error.response = response;
+                  throw error;
+               }
+            },
+            error => {
+               var errmess = new Error(error.message);
+               throw errmess;
+            }
+         )
+         .then(response => {
+            return response.json()
+            // response.text();
+         })
+         .then(data => {
+            // ToastAndroid.show(data, ToastAndroid.LONG);
+            console.log("raspunsul este : ")
+            console.log( data);
+         })
+         .catch(error => {
+            console.log(error);
+            // ToastAndroid.show(error, ToastAndroid.LONG);
+         });
+   };
+
    render() {
       return (
          <View style={styles.container}>
@@ -88,7 +164,7 @@ class LoginTab extends Component {
             />
             <View style={styles.formButton}>
                <Button
-                  onPress={() => this.handleLogin()}
+                  onPress={this.handleRealLogin}
                   title="Login"
                   icon={
                      <Icon
@@ -125,51 +201,20 @@ class LoginTab extends Component {
       );
    }
 }
+
+/**
+ * REGISTER TAB
+ */
+
 class RegisterTab extends Component {
-   constructor(props) {
-      super(props);
-
-      this.state = {
-         username: "",
-         password: "",
-         firstname: "",
-         lastname: "",
-         email: "",
-         remember: false,
-         imageUrl: baseUrl + "images/logo.png"
-      };
-   }
-
-   getImageFromCamera = async () => {
-      const cameraPermission = await Permissions.askAsync(Permissions.CAMERA);
-      const cameraRollPermission = await Permissions.askAsync(
-         Permissions.CAMERA_ROLL
-      );
-
-      if (
-         cameraPermission.status === "granted" &&
-         cameraRollPermission.status === "granted"
-      ) {
-         let capturedImage = await ImagePicker.launchCameraAsync({
-            allowsEditing: true,
-            aspect: [4, 3]
-         });
-         if (!capturedImage.cancelled) {
-            console.log(capturedImage);
-            this.processImage(capturedImage.uri);
-            // this.setState({ imageUrl: capturedImage.uri });
-         }
-      }
-   };
-
-   processImage = async imageUri => {
-      let processedImage = await ImageManipulator.manipulate(
-         imageUri,
-         [{ resize: { width: 200 } }],
-         { format: "png" }
-      );
-      console.log(processedImage);
-      this.setState({ imageUrl: processedImage.uri });
+   state = {
+      username: "",
+      password: "",
+      firstname: "",
+      lastname: "",
+      email: "",
+      remember: false,
+      imageUrl: baseUrl + "images/logo.png"
    };
 
    static navigationOptions = {
@@ -196,6 +241,54 @@ class RegisterTab extends Component {
          ).catch(error => console.log("Could not save user info", error));
    }
 
+   getImageFromCamera = async () => {
+      const cameraPermission = await Permissions.askAsync(Permissions.CAMERA);
+      const cameraRollPermission = await Permissions.askAsync(
+         Permissions.CAMERA_ROLL
+      );
+
+      if (
+         cameraPermission.status === "granted" &&
+         cameraRollPermission.status === "granted"
+      ) {
+         let capturedImage = await ImagePicker.launchCameraAsync({
+            allowsEditing: true,
+            aspect: [4, 3]
+         });
+         if (!capturedImage.cancelled) {
+            console.log(capturedImage);
+            this.processImage(capturedImage.uri);
+         }
+      }
+   };
+
+   /**
+    * Look here for the forth assignment
+    */
+   getImageFromGallery = async () => {
+      const cameraRollPermission = await Permissions.askAsync(
+         Permissions.CAMERA_ROLL
+      );
+
+      if (cameraRollPermission.status === "granted") {
+         let capturedImage = await ImagePicker.launchImageLibraryAsync();
+         if (!capturedImage.cancelled) {
+            console.log(capturedImage);
+            this.processImage(capturedImage.uri);
+         }
+      }
+   };
+
+   processImage = async imageUri => {
+      let processedImage = await ImageManipulator.manipulateAsync(
+         imageUri,
+         [{ resize: { width: 200 } }],
+         { format: "png" }
+      );
+      console.log(processedImage);
+      this.setState({ imageUrl: processedImage.uri });
+   };
+
    render() {
       return (
          <ScrollView>
@@ -207,6 +300,7 @@ class RegisterTab extends Component {
                      style={styles.image}
                   />
                   <Button title="Camera" onPress={this.getImageFromCamera} />
+                  <Button title="Gallery" onPress={this.getImageFromGallery} />
                </View>
                <Input
                   placeholder="Username"
@@ -283,7 +377,8 @@ const styles = StyleSheet.create({
    imageContainer: {
       flex: 1,
       flexDirection: "row",
-      margin: 20
+      margin: 20,
+      justifyContent: "space-between"
    },
    image: {
       margin: 10,
@@ -302,17 +397,19 @@ const styles = StyleSheet.create({
    }
 });
 
-const Login = createBottomTabNavigator({
-    Login: LoginTab,
-    Register: RegisterTab
-}, {
-    tabBarOptions: {
-        activeBackgroundColor: '#9575CD',
-        inactiveBackgroundColor: '#D1C4E9',
-        activeTintColor: '#ffffff',
-        inactiveTintColor: 'gray'
-    }
-});
+const Login = createBottomTabNavigator(
+   {
+      Login: LoginTab,
+      Register: RegisterTab
+   },
+   {
+      tabBarOptions: {
+         activeBackgroundColor: "#9575CD",
+         inactiveBackgroundColor: "#D1C4E9",
+         activeTintColor: "#ffffff",
+         inactiveTintColor: "gray"
+      }
+   }
+);
 
 export default Login;
-

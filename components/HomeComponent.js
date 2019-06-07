@@ -81,7 +81,7 @@ class Home extends Component {
 
     return (
       <View style={{ flex: 1, flexDirection: "row", justifyContent: "center" }}>
-        <Animated.View
+        {/* <Animated.View
           style={{ width: "100%", transform: [{ translateX: xpos1 }] }}
         >
           <RenderItem
@@ -113,7 +113,7 @@ class Home extends Component {
             isLoading={this.props.leaders.isLoading}
             erreMess={this.props.leaders.erreMess}
           />
-        </Animated.View>
+        </Animated.View> */}
       </View>
     );
   }

@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import DatePicker from "react-native-datepicker";
 import * as Animatable from "react-native-animatable";
-import { Permissions, Notifications } from "expo";
+import { Permissions, Notifications, Calendar } from "expo";
 
 class Reservation extends Component {
    constructor(props) {
@@ -26,6 +26,39 @@ class Reservation extends Component {
 
    static navigationOptions = {
       title: "Reserve Table"
+   };
+
+   /**
+    * Fourth Assignment
+    */
+   addReservationToCalendar = async date => {
+      await this.obtainCalendarPermission();
+      Calendar.createEventAsync(Calendar.DEFAULT, {
+         title: "Con Fusion Table Reservation",
+         startDate: new Date(Date.parse(date)),
+          endDate: new Date(Date.parse(date) + 7200000),
+         timeZone: "Asia/Hong_Kong",
+         location:
+            "121, Clear Water Bay Road, Clear Water Bay, Kowloon, Hong Kong"
+      })
+         .then(event => {
+            console.log("success", event);
+         })
+         .catch(error => {
+            console.log("failure", error);
+         });
+   };
+
+   obtainCalendarPermission = async () => {
+      let permission = await Permissions.getAsync(Permissions.CALENDAR);
+
+      if (permission.status !== "granted") {
+         permission = await Permissions.askAsync(Permissions.CALENDAR);
+         if (permission.status !== "granted") {
+            Alert.alert("Permission not granted to access Calendar");
+         }
+      }
+      return permission;
    };
 
    handleReservation() {
@@ -49,6 +82,7 @@ class Reservation extends Component {
                onPress: () => {
                   this.presentLocalNotification(this.state.date);
                   this.resetForm();
+                  this.addReservationToCalendar(this.state.date);
                }
             }
          ],
@@ -56,7 +90,6 @@ class Reservation extends Component {
       );
 
       this.resetForm();
-      //   this.toggleModal();
    }
 
    resetForm = () => {
