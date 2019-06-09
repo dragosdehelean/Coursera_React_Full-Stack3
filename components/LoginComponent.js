@@ -104,15 +104,11 @@ class LoginTab extends Component {
       fetch(path, requestConfig)
          .then(
             response => {
-            
                if (response.ok) {
                   return response;
                } else {
                   var error = new Error(
-                     "Error " +
-                        response.status +
-                        ": " +
-                        response.statusText
+                     "Error " + response.status + ": " + response.statusText
                   );
                   error.response = response;
                   throw error;
@@ -124,19 +120,69 @@ class LoginTab extends Component {
             }
          )
          .then(response => {
-            return response.json()
+            return response.json();
             // response.text();
          })
          .then(data => {
             // ToastAndroid.show(data, ToastAndroid.LONG);
-            console.log("raspunsul este : ")
-            console.log( data);
+            console.log("raspunsul este : ");
+            console.log(data);
+            this.handleRealRegister(data.access_token)
          })
          .catch(error => {
             console.log(error);
             // ToastAndroid.show(error, ToastAndroid.LONG);
          });
    };
+
+   handleRealRegister(token) {
+      let contentType = "application/x-www-form-urlencoded";
+
+      console.log("hai sa-i dam drumul; "  + token);
+
+      const requestConfig = {
+         headers: {
+            "Content-Type": contentType,
+            Authorization:
+               "Bearer " + token               
+         }
+      };
+
+      let path = "http://10.144.174.143:8080/api/user/health";
+
+      //   fetch(path, requestConfig)
+      fetch(path, requestConfig)
+         .then(
+            response => {
+               if (response.ok) {
+                  return response;
+               } else {
+                  var error = new Error(
+                     "Error " + response.status + ": " + response.statusText
+                  );
+                  error.response = response;
+                  throw error;
+               }
+            },
+            error => {
+               var errmess = new Error(error.message);
+               throw errmess;
+            }
+         )
+         .then(response => {
+            return response.text();
+            // response.text();
+         })
+         .then(data => {
+            // ToastAndroid.show(data, ToastAndroid.LONG);
+            console.log("raspunsul este : ");
+            console.log(data);
+         })
+         .catch(error => {
+            console.log(error);
+            // ToastAndroid.show(error, ToastAndroid.LONG);
+         });
+   }
 
    render() {
       return (
@@ -181,7 +227,8 @@ class LoginTab extends Component {
             </View>
             <View style={styles.formButton}>
                <Button
-                  onPress={() => this.props.navigation.navigate("Register")}
+                  //   onPress={() => this.props.navigation.navigate("Register")}
+                  onPress={this.handleRealRegister}
                   title="Register"
                   clear
                   icon={
